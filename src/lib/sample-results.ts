@@ -149,6 +149,38 @@ export const sampleResults: SampleResult[] = [
 
 export const roastLevels = ["やさしい", "ばかぁ", "ざぁこ", "豚豚アラート"] as const;
 
+const sampleAliases: Record<string, string> = {
+  ramen: "ramen-001",
+  "ramen-001": "ramen-001",
+  starbucks: "starbucks-001",
+  frappe: "starbucks-001",
+  "starbucks-001": "starbucks-001",
+  sweets: "sweets-001",
+  "sweets-001": "sweets-001",
+  "midnight-noodle": "midnight-noodle-001",
+  cupnoodle: "midnight-noodle-001",
+  "midnight-noodle-001": "midnight-noodle-001",
+  "triple-sweets": "triple-sweets-001",
+  "triple-sweets-001": "triple-sweets-001",
+  karaage: "karaage-bento-001",
+  "karaage-bento": "karaage-bento-001",
+  "karaage-bento-001": "karaage-bento-001",
+  pizza: "pizza-001",
+  "pizza-001": "pizza-001",
+  "good-meal": "good-meal-001",
+  good: "good-meal-001",
+  "good-meal-001": "good-meal-001"
+};
+
 export function getResultById(id: string) {
   return sampleResults.find((result) => result.id === id) ?? sampleResults[0];
+}
+
+export function getResultBySampleParam(sample: string | null) {
+  if (!sample) {
+    return sampleResults[0];
+  }
+
+  const normalized = sample.trim().toLowerCase();
+  return getResultById(sampleAliases[normalized] ?? normalized);
 }

@@ -19,8 +19,8 @@ export type GenerateCommentResponse = {
 };
 
 export const commentLengthLimits: Record<keyof GenerateCommentResponse, number> = {
-  roastComment: 35,
-  recoveryAction: 35,
-  voiceLine: 30,
-  shareCaption: 30
+  roastComment: 32,
+  recoveryAction: 30,
+  voiceLine: 25,
+  shareCaption: 22
 };

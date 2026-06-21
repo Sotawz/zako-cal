@@ -20,10 +20,12 @@ export function Chrome({ view, children, onNavigate }: ChromeProps) {
   const isFullscreenResult = view === "result";
 
   return (
-    <main className={isFullscreenResult ? "min-h-screen" : "min-h-screen px-3 py-4 sm:px-6"}>
+    <main
+      className={isFullscreenResult ? "min-h-[100dvh] min-h-[100svh]" : "min-h-screen px-3 py-4 sm:px-6"}
+    >
       <div
         className={`mx-auto flex w-full max-w-[430px] flex-col ${
-          isFullscreenResult ? "min-h-screen" : "min-h-[calc(100vh-2rem)]"
+          isFullscreenResult ? "min-h-[100dvh] min-h-[100svh]" : "min-h-[calc(100vh-2rem)]"
         }`}
       >
         {children}

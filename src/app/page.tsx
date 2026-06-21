@@ -5,7 +5,7 @@ import type { AppView, RoastLevel, SampleResult } from "@/types";
 import type { GenerateCommentRequest, GenerateCommentResponse } from "@/lib/ai/commentTypes";
 import { fallbackMealAnalysis } from "@/lib/ai/fallbackMealAnalysis";
 import type { MealAnalysisResult } from "@/lib/ai/mealAnalysisTypes";
-import { sampleResults } from "@/lib/sample-results";
+import { getResultBySampleParam, sampleResults } from "@/lib/sample-results";
 import { Chrome } from "@/components/Chrome";
 import { AnalyzingScreen } from "@/components/screens/AnalyzingScreen";
 import { DetailScreen } from "@/components/screens/DetailScreen";
@@ -161,6 +161,22 @@ export default function Page() {
   const [defaultRoastLevel, setDefaultRoastLevel] = useState<RoastLevel>("ざぁこ");
 
   const latestResult = history[0] ?? sampleResults[0];
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const isDemo = params.get("demo") === "1";
+    const sample = params.get("sample");
+
+    if (!isDemo || !sample) {
+      return;
+    }
+
+    const demoResult = getResultBySampleParam(sample);
+    setSelectedResult(demoResult);
+    setPendingResult(demoResult);
+    setPendingUpload(null);
+    setView("result");
+  }, []);
 
   const currentView = useMemo(() => {
     switch (view) {

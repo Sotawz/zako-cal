@@ -16,7 +16,11 @@ type ResultViewMode = "normal" | "share" | "talk";
 
 export function ResultScreen({ result, onRetry, onHistory }: ResultScreenProps) {
   const [viewMode, setViewMode] = useState<ResultViewMode>("talk");
-  const [demoMode, setDemoMode] = useState(false);
+  const [demoMode, setDemoMode] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("demo") === "1"
+  );
 
   useEffect(() => {
     setDemoMode(new URLSearchParams(window.location.search).get("demo") === "1");

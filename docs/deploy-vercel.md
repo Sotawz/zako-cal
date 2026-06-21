@@ -44,8 +44,11 @@ Phase 6の公開デモでは原則なし。
 
 - 通常確認: `https://<your-vercel-project>.vercel.app/`
 - 動画確認: `https://<your-vercel-project>.vercel.app/?demo=1`
+- サンプル直リンク: `https://<your-vercel-project>.vercel.app/?demo=1&sample=ramen`
+- サンプル一覧: [demo-links.md](demo-links.md)
 
 `?demo=1` は、結果のトーク表示でモード切替タブを隠し、ショート動画向けに余白を減らすための軽い表示モードです。
+`sample` を付けると、指定サンプルのキャロリントーク画面を直接開けます。
 
 ## スマホ確認項目
 
