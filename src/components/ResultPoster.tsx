@@ -106,6 +106,8 @@ function CalorieCard({ result, share = false }: { result: SampleResult; share?: 
 }
 
 function MealInfoCard({ result }: { result: SampleResult }) {
+  const detectedItems = result.detectedItems ?? [];
+
   return (
     <Card className="mt-4 p-5">
       <p className="text-[13px] font-medium text-zinc-500">食事内容</p>
@@ -119,6 +121,38 @@ function MealInfoCard({ result }: { result: SampleResult }) {
         </span>
       </div>
       <p className="mt-3 text-[14px] leading-relaxed text-zinc-500">{result.reason}</p>
+      {result.uncertaintyNotes && (
+        <p className="mt-2 rounded-2xl bg-zinc-50 px-3 py-2 text-[12px] leading-relaxed text-zinc-500">
+          目安: {result.uncertaintyNotes}
+        </p>
+      )}
+      {detectedItems.length > 0 && (
+        <div className="mt-3 grid gap-2">
+          {detectedItems.slice(0, 4).map((item) => (
+            <div
+              key={`${item.name}-${item.caloriesMin}-${item.caloriesMax}`}
+              className="rounded-2xl border border-zinc-100 bg-zinc-50 px-3 py-2"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="min-w-0 truncate text-[13px] font-semibold text-zinc-800">
+                  {item.name}
+                  {item.estimatedAmount && (
+                    <span className="ml-1 font-medium text-zinc-500">({item.estimatedAmount})</span>
+                  )}
+                </p>
+                <p className="shrink-0 text-[12px] font-semibold text-pink-600">
+                  {item.caloriesMin > 0 || item.caloriesMax > 0
+                    ? `${item.caloriesMin}〜${item.caloriesMax} kcal`
+                    : "目安"}
+                </p>
+              </div>
+              <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-zinc-500">
+                {item.reason}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </Card>
   );
 }

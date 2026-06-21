@@ -118,6 +118,7 @@ function buildResultFromMealAnalysis(
     voiceLine: "キャロリン判定中だぞぉw",
     imageUrl,
     detectedItems: analysis.detectedItems,
+    uncertaintyNotes: analysis.uncertaintyNotes,
     source: "upload",
     analysisFallback: analysis.fallback
   };
@@ -147,6 +148,7 @@ function buildUploadPlaceholder(
     voiceLine: "カロリー確認中だぞぉw",
     imageUrl,
     detectedItems: [],
+    uncertaintyNotes: "画像を解析中です",
     source: "upload"
   };
 }

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { fallbackMealAnalysis } from "@/lib/ai/fallbackMealAnalysis";
 import { MEAL_ANALYSIS_PROMPT } from "@/lib/ai/mealAnalysisPrompt";
 import type { MealAnalysisResult } from "@/lib/ai/mealAnalysisTypes";
-import type { Confidence } from "@/types";
+import type { Confidence, DetectedMealItem } from "@/types";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -32,6 +32,11 @@ function normalizeCalories(value: unknown, fallback: number) {
   }
 
   return Math.max(0, Math.round(value));
+}
+
+function clipText(value: string, limit: number) {
+  const trimmed = value.trim();
+  return trimmed.length > limit ? `${trimmed.slice(0, Math.max(0, limit - 1))}…` : trimmed;
 }
 
 function extractJsonText(content: string) {
@@ -89,30 +94,78 @@ function normalizeMealAnalysis(value: unknown, fallback: MealAnalysisResult): Me
   const caloriesMin = normalizeCalories(value.caloriesMin, fallback.caloriesMin);
   const rawMax = normalizeCalories(value.caloriesMax, fallback.caloriesMax);
   const caloriesMax = Math.max(caloriesMin, rawMax);
-  const detectedItems = Array.isArray(value.detectedItems)
-    ? value.detectedItems
-        .filter((item): item is string => typeof item === "string" && item.trim().length > 0)
-        .slice(0, 6)
-    : fallback.detectedItems;
+  const detectedItems = normalizeDetectedItems(value.detectedItems, fallback.detectedItems);
 
   return {
     foodName:
       typeof value.foodName === "string" && value.foodName.trim()
-        ? value.foodName.trim().slice(0, 40)
+        ? clipText(value.foodName, 40)
         : fallback.foodName,
     caloriesMin,
     caloriesMax,
     caloriesDisplay:
       typeof value.caloriesDisplay === "string" && value.caloriesDisplay.trim()
-        ? value.caloriesDisplay.trim().slice(0, 32)
+        ? clipText(value.caloriesDisplay, 32)
         : formatCaloriesDisplay(caloriesMin, caloriesMax),
     confidence: normalizeConfidence(value.confidence),
     reason:
       typeof value.reason === "string" && value.reason.trim()
-        ? value.reason.trim().slice(0, 80)
+        ? clipText(value.reason, 90)
         : fallback.reason,
-    detectedItems
+    detectedItems,
+    uncertaintyNotes:
+      typeof value.uncertaintyNotes === "string" && value.uncertaintyNotes.trim()
+        ? clipText(value.uncertaintyNotes, 90)
+        : fallback.uncertaintyNotes
   };
+}
+
+function normalizeDetectedItems(value: unknown, fallback: DetectedMealItem[]) {
+  if (!Array.isArray(value)) {
+    return fallback;
+  }
+
+  const normalized = value
+    .map((item): DetectedMealItem | null => {
+      if (typeof item === "string" && item.trim()) {
+        return {
+          name: clipText(item, 28),
+          caloriesMin: 0,
+          caloriesMax: 0,
+          reason: "写真内で見えた品目として検出"
+        };
+      }
+
+      if (!isRecord(item)) {
+        return null;
+      }
+
+      const name = typeof item.name === "string" && item.name.trim() ? clipText(item.name, 28) : "";
+      if (!name) {
+        return null;
+      }
+
+      const caloriesMin = normalizeCalories(item.caloriesMin, 0);
+      const caloriesMax = Math.max(caloriesMin, normalizeCalories(item.caloriesMax, caloriesMin));
+
+      return {
+        name,
+        estimatedAmount:
+          typeof item.estimatedAmount === "string" && item.estimatedAmount.trim()
+            ? clipText(item.estimatedAmount, 24)
+            : undefined,
+        caloriesMin,
+        caloriesMax,
+        reason:
+          typeof item.reason === "string" && item.reason.trim()
+            ? clipText(item.reason, 70)
+            : "写真から見える量をもとに推定"
+      };
+    })
+    .filter((item): item is DetectedMealItem => item !== null)
+    .slice(0, 6);
+
+  return normalized.length > 0 ? normalized : fallback;
 }
 
 async function analyzeWithOpenAI(file: File): Promise<MealAnalysisResult> {

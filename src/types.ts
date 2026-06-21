@@ -4,6 +4,14 @@ export type Confidence = "高" | "中" | "低";
 
 export type ResultDisplayMode = "normal" | "share" | "compact";
 
+export type DetectedMealItem = {
+  name: string;
+  estimatedAmount?: string;
+  caloriesMin: number;
+  caloriesMax: number;
+  reason: string;
+};
+
 export type SampleResult = {
   id: string;
   foodName: string;
@@ -21,7 +29,8 @@ export type SampleResult = {
   shareCaption: string;
   voiceLine: string;
   imageUrl: string;
-  detectedItems?: string[];
+  detectedItems?: DetectedMealItem[];
+  uncertaintyNotes?: string;
   source?: "sample" | "upload";
   analysisFallback?: boolean;
 };

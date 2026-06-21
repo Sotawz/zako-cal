@@ -1,5 +1,6 @@
 import { HeartPulse, MessageCircle, Utensils } from "lucide-react";
 import type { SampleResult } from "@/types";
+import { CarolynVoiceButton } from "../voice/CarolynVoiceButton";
 import { CarolynAvatar, type CarolynMood } from "./CarolynAvatar";
 
 type CarolynTalkSceneProps = {
@@ -95,8 +96,9 @@ export function CarolynTalkScene({ result, onBack, demoMode = false }: CarolynTa
           <Utensils size={13} />
           <span className="truncate">{result.foodName}</span>
         </span>
-        <span className="rounded-full border border-pink-100 bg-white/82 px-2.5 py-1.5 text-[11px] font-semibold text-pink-600 shadow-sm backdrop-blur">
-          推定 {result.caloriesDisplay}
+        <span className="rounded-2xl border border-pink-100 bg-white/86 px-3 py-1.5 text-pink-600 shadow-sm backdrop-blur">
+          <span className="block text-[10px] font-semibold leading-none text-pink-400">推定カロリー</span>
+          <span className="block text-[16px] font-semibold leading-tight">{result.caloriesDisplay}</span>
         </span>
       </div>
 
@@ -114,9 +116,12 @@ export function CarolynTalkScene({ result, onBack, demoMode = false }: CarolynTa
         className="absolute inset-x-3 z-40 animate-carolyn-pop rounded-[26px] border border-white/80 bg-white/82 px-4 py-3 shadow-[0_18px_44px_rgba(236,72,153,0.14)] backdrop-blur-md"
         style={{ bottom: "calc(58px + env(safe-area-inset-bottom))" }}
       >
-        <div className="mb-1 flex items-center gap-2 text-[11px] font-semibold text-pink-600">
-          <MessageCircle size={15} />
-          キャロリン
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-[11px] font-semibold text-pink-600">
+            <MessageCircle size={15} />
+            キャロリン
+          </div>
+          <CarolynVoiceButton voiceLine={result.voiceLine} roastComment={roastComment} />
         </div>
         <p className="line-clamp-2 text-[19px] font-semibold leading-snug tracking-tight text-zinc-950">
           「{roastComment}」
